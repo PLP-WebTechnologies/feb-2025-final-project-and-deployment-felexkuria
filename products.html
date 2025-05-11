@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products - TaxEase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.2s;
+      }
+      .product-image:hover {
+        transform: scale(1.05);
+      }
+    </style>
+    <script>
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      function addToCart(
+        productId,
+        productName,
+        productCategory,
+        productUrl,
+        price
+      ) {
+        cart.push({
+          productId,
+          name: productName,
+          category: productCategory,
+          url: productUrl,
+          price,
+        });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        alert(`${productName} added to cart!`);
+      }
+
+      function updateCartCount() {
+        const cartCount = document.getElementById("cartCount");
+        cartCount.textContent = cart.length;
+        cartCount.classList.remove("hidden");
+      }
+
+      window.onload = function () {
+        updateCartCount();
+      };
+    </script>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+      <div
+        class="container mx-auto px-4 py-4 flex justify-between items-center"
+      >
+        <h1 class="text-2xl font-semibold text-blue-600">TaxEase</h1>
+        <nav class="space-x-6 flex items-center">
+          <a href="index.html" class="text-sm hover:text-blue-500">Home</a>
+          <a href="cart.html" class="text-sm hover:text-blue-500">Cart</a>
+          <a href="contact_us.html" class="text-sm hover:text-blue-500"
+            >Contact</a
+          >
+          <div class="relative">
+            <a href="cart.html">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-blue-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <span
+                id="cartCount"
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden"
+              >
+                0
+              </span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Products Section -->
+    <section id="products" class="py-12 container mx-auto px-4">
+      <h3 class="text-2xl font-semibold text-center mb-8">Our Products</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <!-- Product 1 -->
+        <div
+          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+        >
+          <h4 class="font-semibold text-lg mt-4">Employee Tax Return</h4>
+          <p class="text-sm text-gray-500 mb-2">
+            Simplify your employee tax filing process.
+          </p>
+          <p class="font-bold text-blue-600 mb-4">KES 200</p>
+          <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+            onclick="addToCart(1, 'Employee Tax Return', 'Tax Service', 'https://example.com/employee-tax-return', 200)"
+          >
+            Add to Cart
+          </button>
+        </div>
+
+        <!-- Product 2 -->
+        <div
+          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+        >
+          <h4 class="font-semibold text-lg mt-4">Withholding Tax</h4>
+          <p class="text-sm text-gray-500 mb-2">
+            Manage your withholding tax efficiently.
+          </p>
+          <p class="font-bold text-blue-600 mb-4">KES 250</p>
+          <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+            onclick="addToCart(2, 'Withholding Tax', 'Tax Service', 'https://example.com/withholding-tax', 250)"
+          >
+            Add to Cart
+          </button>
+        </div>
+
+        <!-- Product 3 -->
+        <div
+          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+        >
+          <h4 class="font-semibold text-lg mt-4">Nil Return</h4>
+          <p class="text-sm text-gray-500 mb-2">
+            File your nil returns quickly and easily.
+          </p>
+          <p class="font-bold text-blue-600 mb-4">KES 100</p>
+          <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+            onclick="addToCart(3, 'Nil Return', 'Tax Service', 'https://example.com/nil-return', 100)"
+          >
+            Add to Cart
+          </button>
+        </div>
+
+        <!-- Product 4 -->
+        <div
+          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+        >
+          <h4 class="font-semibold text-lg mt-4">Tax Compliance</h4>
+          <p class="text-sm text-gray-500 mb-2">
+            Ensure your tax compliance with ease.
+          </p>
+          <p class="font-bold text-blue-600 mb-4">KES 100</p>
+          <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+            onclick="addToCart(4, 'Tax Compliance', 'Tax Service', 'https://example.com/tax-compliance', 100)"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow mt-12">
+      <div class="container mx-auto px-4 py-6 text-center">
+        <p class="text-sm text-gray-600">
+          &copy; 2025 TaxEase. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
