@@ -4,6 +4,21 @@ if (!localStorage.getItem("orders")) localStorage.setItem("orders", JSON.stringi
 if (!localStorage.getItem("payments")) localStorage.setItem("payments", JSON.stringify([]));
 if (!localStorage.getItem("products")) localStorage.setItem("products", JSON.stringify([]));
 
+// Show toast message
+function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg animate-toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Add animation to button
+function animateButton(button) {
+    button.classList.add("animate-bounce");
+    setTimeout(() => button.classList.remove("animate-bounce"), 500);
+}
+
 // Add product to cart
 function addToCart(productId, productName, productCategory, productUrl, price, quantity = 1) {
     const orders = JSON.parse(localStorage.getItem("orders"));
@@ -35,7 +50,10 @@ function addToCart(productId, productName, productCategory, productUrl, price, q
         localStorage.setItem("products", JSON.stringify(products));
     }
 
-    alert(`${productName} added to cart!`);
+    const button = document.querySelector(`button[onclick*="addToCart(${productId}"]`);
+    if (button) animateButton(button);
+
+    showToast(`${productName} added to cart!`);
 }
 
 // Render cart items

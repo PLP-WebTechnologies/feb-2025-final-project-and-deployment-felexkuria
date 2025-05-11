@@ -53,9 +53,9 @@
 
       function removeFromCart(index) {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.splice(index, 1);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        renderCart();
+        cart.splice(index, 1); // Remove the item at the specified index
+        localStorage.setItem("cart", JSON.stringify(cart)); // Update localStorage with the modified cart
+        renderCart(); // Re-render the cart
       }
 
       window.onload = renderCart;
