@@ -14,7 +14,6 @@
         font-family: "Inter", sans-serif;
       }
       .product-image {
-        width: 100%;
         height: 200px;
         object-fit: cover;
         border-radius: 8px;
@@ -22,6 +21,20 @@
       }
       .product-image:hover {
         transform: scale(1.05);
+      }
+      .animate-button {
+        animation: buttonAnimation 0.3s ease-in-out;
+      }
+      @keyframes buttonAnimation {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
     </style>
     <script>
@@ -32,7 +45,8 @@
         productName,
         productCategory,
         productUrl,
-        price
+        price,
+        button
       ) {
         cart.push({
           productId,
@@ -44,17 +58,98 @@
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartCount();
         alert(`${productName} added to cart!`);
+        button.classList.add("animate-button");
+        setTimeout(() => {
+          button.classList.remove("animate-button");
+        }, 300);
       }
 
       function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
         const cartCount = document.getElementById("cartCount");
+        const cartIcon = document.getElementById("cartIcon");
+
         cartCount.textContent = cart.length;
-        cartCount.classList.remove("hidden");
+        cartCount.classList.toggle("hidden", cart.length === 0);
+
+        // Animate the cart icon
+        cartIcon.classList.add("animate-cart");
+        setTimeout(() => cartIcon.classList.remove("animate-cart"), 500);
       }
 
-      window.onload = function () {
+      window.onload = updateCartCount;
+    </script>
+    <script>
+      function addToCart(
+        productId,
+        productName,
+        productCategory,
+        productUrl,
+        price
+      ) {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({
+          productId,
+          name: productName,
+          category: productCategory,
+          url: productUrl,
+          price,
+        });
+        localStorage.setItem("cart", JSON.stringify(cart));
         updateCartCount();
-      };
+
+        // Handle product-specific prompts
+        if (productName === "Employee Tax Return") {
+          const itaxPassword = prompt("Enter your iTax password:");
+          if (!itaxPassword) {
+            if (
+              confirm(
+                "Don't have an iTax password? Watch this video to learn how to create one."
+              )
+            ) {
+              window.location.href = "https://www.youtube.com/watch?v=example"; // Replace with actual video URL
+            }
+            return;
+          }
+          alert("Please upload your P9 form.");
+          window.location.href = "upload_p9.html";
+        } else if (productName === "Nil Return") {
+          const itaxPassword = prompt("Enter your iTax password:");
+          if (!itaxPassword) {
+            if (
+              confirm(
+                "Don't have an iTax password? Watch this video to learn how to create one."
+              )
+            ) {
+              window.location.href = "https://www.youtube.com/watch?v=example"; // Replace with actual video URL
+            }
+            return;
+          }
+          alert("Nil Return added to cart!");
+        } else if (productName === "Withholding Tax") {
+          const withholdingCertificate = prompt(
+            "Upload your withholding certificate:"
+          );
+          if (!withholdingCertificate) {
+            alert("Withholding certificate is required.");
+            return;
+          }
+          alert("Withholding Tax added to cart!");
+        } else if (productName === "Tax Compliance") {
+          const itaxPassword = prompt("Enter your iTax password:");
+          if (!itaxPassword) {
+            if (
+              confirm(
+                "Don't have an iTax password? Watch this video to learn how to create one."
+              )
+            ) {
+              window.location.href = "https://www.youtube.com/watch?v=example"; // Replace with actual video URL
+            }
+            return;
+          }
+          alert("Tax Compliance added to cart!");
+        }
+      }
     </script>
   </head>
   <body class="bg-gray-50 text-gray-800">
@@ -66,14 +161,20 @@
         <h1 class="text-2xl font-semibold text-blue-600">TaxEase</h1>
         <nav class="space-x-6 flex items-center">
           <a href="index.html" class="text-sm hover:text-blue-500">Home</a>
-          <a href="cart.html" class="text-sm hover:text-blue-500">Cart</a>
+          <a href="products.html" class="text-sm hover:text-blue-500"
+            >Products</a
+          >
           <a href="contact_us.html" class="text-sm hover:text-blue-500"
             >Contact</a
+          >
+          <a href="about_us.html" class="text-sm hover:text-blue-500"
+            >About Us</a
           >
           <div class="relative">
             <a href="cart.html">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
+                id="cartIcon"
                 class="h-6 w-6 text-blue-600"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -98,57 +199,137 @@
       </div>
     </header>
 
-    <!-- Products Section -->
-    <section id="products" class="py-12 container mx-auto px-4">
-      <h3 class="text-2xl font-semibold text-center mb-8">Our Products</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <!-- Product 1 -->
-        <div
-          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
-        >
-          <img
-            src="gvc.product.image.1718162684246.ad3ef74e-c0e6-46a7-9851-3a710bf0e69c.jpeg"
-            alt="Freelancer Tax Guide Cover"
-            class="product-image"
-            loading="lazy"
-          />
-          <h4 class="font-semibold text-lg mt-4">Freelancer Tax Guide</h4>
-          <p class="text-sm text-gray-500 mb-2">
-            Step-by-step guide for freelancers in 2025.
-          </p>
-          <p class="font-bold text-blue-600 mb-4">KES 2,000</p>
-          <button
-            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
-            onclick="addToCart('Freelancer Tax Guide', 2000)"
+    <main>
+      <!-- Products Section -->
+      <section id="products" class="py-12 container mx-auto px-4">
+        <h3 class="text-2xl font-semibold text-center mb-8">Our Products</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <!-- Product 1 -->
+          <div
+            class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
           >
-            Add to Cart
-          </button>
-        </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-blue-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+              />
+            </svg>
+            <h4 class="font-semibold text-lg mt-4">Employee Tax Return</h4>
+            <p class="text-sm text-gray-500 mb-2">
+              Simplify your employee tax filing process.
+            </p>
+            <p class="font-bold text-blue-600 mb-4">KES 200</p>
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+              onclick="addToCart(1, 'Employee Tax Return', 'Tax Service', 'https://example.com/employee-tax-return', 200)"
+            >
+              Add to Cart
+            </button>
+          </div>
 
-        <!-- Product 2 -->
-        <div
-          class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
-        >
-          <img
-            src="./1-4.jpg"
-            alt="Tax Software Pro Cover"
-            class="product-image"
-            loading="lazy"
-          />
-          <h4 class="font-semibold text-lg mt-4">Tax Software Pro</h4>
-          <p class="text-sm text-gray-500 mb-2">
-            Automated tool to generate returns fast.
-          </p>
-          <p class="font-bold text-blue-600 mb-4">KES 5,000</p>
-          <button
-            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
-            onclick="addToCart(2, 'Tax Software Pro', 'Software', 'https://example.com/tax-software-pro', 5000); showP9Upload();"
+          <!-- Product 2 -->
+          <div
+            class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
           >
-            Add to Cart
-          </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-blue-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <h4 class="font-semibold text-lg mt-4">Withholding Tax</h4>
+            <p class="text-sm text-gray-500 mb-2">
+              Manage your withholding tax efficiently.
+            </p>
+            <p class="font-bold text-blue-600 mb-4">KES 250</p>
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+              onclick="addToCart(2, 'Withholding Tax', 'Tax Service', 'https://example.com/withholding-tax', 250)"
+            >
+              Add to Cart
+            </button>
+          </div>
+
+          <!-- Product 3 -->
+          <div
+            class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-blue-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h4 class="font-semibold text-lg mt-4">Nil Return</h4>
+            <p class="text-sm text-gray-500 mb-2">
+              File your nil returns quickly and easily.
+            </p>
+            <p class="font-bold text-blue-600 mb-4">KES 100</p>
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+              onclick="addToCart(3, 'Nil Return', 'Tax Service', 'https://example.com/nil-return', 100)"
+            >
+              Add to Cart
+            </button>
+          </div>
+
+          <!-- Product 4 -->
+          <div
+            class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-blue-600 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h4 class="font-semibold text-lg mt-4">Tax Compliance</h4>
+            <p class="text-sm text-gray-500 mb-2">
+              Ensure your tax compliance with ease.
+            </p>
+            <p class="font-bold text-blue-600 mb-4">KES 100</p>
+            <button
+              class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 text-sm transition-colors duration-200"
+              onclick="addToCart(4, 'Tax Compliance', 'Tax Service', 'https://example.com/tax-compliance', 100)"
+            >
+              Add to Cart
+            </button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
     <!-- Footer -->
     <footer class="bg-white shadow mt-12">

@@ -37,12 +37,14 @@
               <div>
                 <p class="font-semibold">${item.name}</p>
                 <p class="text-sm text-gray-500">KES ${item.price}</p>
+                <p class="text-sm text-gray-500">Category: ${item.category}</p>
+                <a href="${item.url}" target="_blank" class="text-blue-500 text-sm underline">View Product</a>
               </div>
               <button
                 class="text-red-500 text-sm"
-                onclick="removeFromCart(${index})"
+                onclick="clearCart()"
               >
-                Remove
+                Remove All
               </button>
             </div>
           `;
@@ -51,11 +53,40 @@
         cartTotal.textContent = `Total: KES ${total}`;
       }
 
-      function removeFromCart(index) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.splice(index, 1); // Remove the item at the specified index
-        localStorage.setItem("cart", JSON.stringify(cart)); // Update localStorage with the modified cart
-        renderCart(); // Re-render the cart
+      function clearCart() {
+        localStorage.removeItem("cart");
+        renderCart();
+      }
+
+      function simulateMpesaPayment() {
+        alert("Simulating M-Pesa STK Push...");
+        setTimeout(() => {
+          alert("Payment Successful!");
+          processOrder();
+          window.location.href = "payment_success.html"; // Redirect to success page
+        }, 3000); // Simulate a delay for the payment process
+      }
+
+      function processOrder() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const customerId = 1; // Assuming logged-in customer ID is 1 for simplicity
+
+        cart.forEach((item, index) => {
+          const newOrder = {
+            orderId: orders.length + 1,
+            customerId: customerId,
+            productId: item.productId,
+            shipped: "No",
+            delivered: "No",
+            readyToFile: "No",
+            quantity: 1, // Assuming quantity is always 1 for simplicity
+          };
+          orders.push(newOrder);
+        });
+
+        localStorage.setItem("orders", JSON.stringify(orders));
+        localStorage.removeItem("cart"); // Clear the cart after processing the order
       }
 
       window.onload = renderCart;
@@ -69,7 +100,7 @@
         class="container mx-auto px-4 py-4 flex justify-between items-center"
       >
         <h1 class="text-2xl font-semibold text-blue-600">TaxEase</h1>
-        <nav class="space-x-6">
+        <nav class="space-x-6 flex items-center">
           <a href="index.html" class="text-sm hover:text-blue-500">Home</a>
           <a href="products.html" class="text-sm hover:text-blue-500"
             >Products</a
@@ -77,24 +108,30 @@
           <a href="contact_us.html" class="text-sm hover:text-blue-500"
             >Contact</a
           >
+          <a href="cart.html" class="text-sm hover:text-blue-500">Cart</a>
+          <a href="about_us.html" class="text-sm hover:text-blue-500"
+            >About Us</a
+          >
         </nav>
       </div>
     </header>
 
-    <!-- Cart Section -->
-    <section class="py-12 container mx-auto px-4">
-      <h2 class="text-2xl font-semibold text-center mb-6">Your Cart</h2>
-      <div id="cartList" class="bg-white rounded-lg shadow p-6"></div>
-      <p id="cartTotal" class="text-right font-bold text-lg mt-4"></p>
-      <div class="text-center mt-6">
-        <button
-          class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-          onclick="alert('Proceeding to checkout...')"
-        >
-          Checkout
-        </button>
-      </div>
-    </section>
+    <main>
+      <!-- Cart Section -->
+      <section class="py-12 container mx-auto px-4">
+        <h2 class="text-2xl font-semibold text-center mb-6">Your Cart</h2>
+        <div id="cartList" class="bg-white rounded-lg shadow p-6"></div>
+        <p id="cartTotal" class="text-right font-bold text-lg mt-4"></p>
+        <div class="text-center mt-6">
+          <button
+            class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+            onclick="simulateMpesaPayment()"
+          >
+            Checkout
+          </button>
+        </div>
+      </section>
+    </main>
 
     <!-- Footer -->
     <footer class="bg-white shadow mt-12">
